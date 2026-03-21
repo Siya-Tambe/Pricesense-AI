@@ -7,8 +7,8 @@ PriceSense is a full-stack AI-powered price tracking web app for Indian e-commer
 
 ## 📸 Screenshots
 
-| Landing Page | Dashboard | Product Page |
-|---|---|---|
+| Landing Page | Dashboard |
+|---|---|
 | ![Landing]("D:\Projects\PriceSense\frontend\Landing_page.png") | ![Dashboard]("D:\Projects\PriceSense\frontend\Dashboard_page.png") 
 
 ---
