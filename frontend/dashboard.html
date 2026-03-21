@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PriceSense Intelligence Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: { extend: {
+      colors: {
+        "primary": "#69daff", "outline-variant": "#46484a", "surface-tint": "#69daff",
+        "outline": "#747578", "on-primary-fixed-variant": "#004a5c", "error-dim": "#d7383b",
+        "on-surface": "#eeeef0", "surface-container": "#171a1c", "inverse-surface": "#f9f9fc",
+        "primary-container": "#00cffc", "on-tertiary-container": "#00213e", "secondary": "#e2e2e5",
+        "inverse-on-surface": "#545557", "surface-variant": "#232629", "on-error": "#490006",
+        "on-surface-variant": "#aaabad", "background": "#0c0e10", "on-secondary": "#505254",
+        "tertiary-fixed": "#72b5ff", "tertiary-dim": "#4aa2f9", "surface-bright": "#292c30",
+        "primary-fixed": "#00cffc", "tertiary-container": "#4aa2f9", "primary-dim": "#00c0ea",
+        "on-primary": "#004a5d", "surface-container-low": "#111416", "inverse-primary": "#006880",
+        "surface-dim": "#0c0e10", "surface-container-high": "#1d2023", "error-container": "#9f0519",
+        "on-error-container": "#ffa8a3", "surface": "#0c0e10", "on-primary-container": "#004050",
+        "tertiary": "#65afff", "surface-container-highest": "#232629", "error": "#ff716c",
+        "on-background": "#eeeef0", "secondary-fixed": "#e2e2e5", "primary-fixed-dim": "#00c0ea",
+        "on-tertiary": "#002e52", "surface-container-lowest": "#000000", "secondary-container": "#454749",
+        "secondary-dim": "#d4d4d7", "on-secondary-container": "#d0d0d3", "on-primary-fixed": "#002a35",
+        "secondary-fixed-dim": "#d4d4d7", "on-secondary-fixed": "#3e3f42", "on-tertiary-fixed": "#001930",
+        "on-tertiary-fixed-variant": "#003b68", "on-secondary-fixed-variant": "#5a5c5e",
+        "tertiary-fixed-dim": "#51a7fe"
+      },
+      fontFamily: { "headline": ["Manrope"], "body": ["Inter"], "label": ["Inter"] },
+      borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+    }}
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+  .pulse-glow { box-shadow: 0 0 15px rgba(105, 218, 255, 0.3); }
+  .glass-header { background: rgba(12, 14, 16, 0.8); backdrop-filter: blur(20px); }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(105,218,255,0.2); border-top-color: #69daff; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: 28px; right: 28px; background: #1d2023; color: #eeeef0; padding: 13px 20px; border-radius: 8px; font-size: 14px; z-index: 999; opacity: 0; transform: translateY(12px); transition: opacity 0.3s, transform 0.3s; pointer-events: none; border: 1px solid rgba(70,72,74,0.3); max-width: 320px; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { border-left: 3px solid #69daff; }
+  .toast.error   { border-left: 3px solid #ff716c; }
+  .toast.info    { border-left: 3px solid #65afff; }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+
+<!-- Top Nav -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 glass-header shadow-[0_40px_60px_-5px_rgba(0,0,0,0.4)]">
+  <div class="flex items-center gap-8">
+    <a href="index.html" class="text-2xl font-bold tracking-tighter text-on-surface font-headline">PriceSense</a>
+    <div class="hidden md:flex gap-6 font-headline font-semibold tracking-tight">
+      <a class="text-primary border-b-2 border-primary pb-1" href="#">Dashboard</a>
+      <a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Analytics</a>
+      <a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Reports</a>
+    </div>
+  </div>
+  <!-- URL input -->
+  <div class="flex-1 max-w-xl px-8">
+    <form id="track-form">
+      <div class="relative group">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">link</span>
+        <input id="url-input" class="w-full bg-surface-container-low border-none ring-1 ring-outline-variant/15 focus:ring-primary focus:ring-2 rounded-lg py-3 pl-12 pr-4 transition-all placeholder:text-on-surface-variant/50 text-sm outline-none" placeholder="Paste product URL to track price..." type="url" autocomplete="off"/>
+      </div>
+    </form>
+  </div>
+  <div class="flex items-center gap-4">
+    <button id="track-btn" onclick="handleTrackSubmit()" class="px-5 py-2 bg-primary text-on-primary rounded-lg font-headline font-bold text-sm transition-all active:scale-95">+ Track</button>
+    <button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+    <button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined">settings</span></button>
+    <div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant/20 flex items-center justify-center">
+      <span class="material-symbols-outlined text-on-surface-variant">person</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 bg-surface-container-low flex flex-col py-8 px-4 gap-y-2 pt-28 hidden lg:flex">
+  <div class="mb-8 px-4">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-primary-container rounded flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings:'FILL' 1;">psychology</span>
+      </div>
+      <div>
+        <h3 class="font-headline font-bold text-on-surface">Intelligence</h3>
+        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant">v2.4 Stable</p>
+      </div>
+    </div>
+  </div>
+  <nav class="space-y-1">
+    <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gradient-to-r from-primary/10 to-transparent text-primary border-r-2 border-primary font-medium text-sm" href="#">
+      <span class="material-symbols-outlined">dashboard</span> Overview
+    </a>
+    <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-medium text-sm transition-all" href="#">
+      <span class="material-symbols-outlined">visibility</span> Watchlist
+    </a>
+    <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-medium text-sm transition-all" href="#">
+      <span class="material-symbols-outlined">timeline</span> Price History
+    </a>
+    <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-medium text-sm transition-all" href="#">
+      <span class="material-symbols-outlined">psychology</span> Insights
+    </a>
+    <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-medium text-sm transition-all" href="#">
+      <span class="material-symbols-outlined">notifications_active</span> Alerts
+    </a>
+  </nav>
+  <div class="mt-8 px-2">
+    <button onclick="document.getElementById('url-input').focus()" class="w-full bg-primary-container text-on-primary-container font-headline font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg">
+      <span class="material-symbols-outlined text-sm">add</span> Add New Product
+    </button>
+  </div>
+  <div class="mt-auto space-y-1 pt-4">
+    <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface text-sm transition-all" href="#"><span class="material-symbols-outlined">help</span> Help Center</a>
+    <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface text-sm transition-all" href="#"><span class="material-symbols-outlined">person</span> Account</a>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="lg:ml-64 pt-28 px-8 pb-12 min-h-screen">
+  <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div>
+      <span class="text-primary font-label text-xs uppercase tracking-[0.2em] mb-2 block">System Status: Live Monitoring</span>
+      <h1 class="text-4xl font-headline font-extrabold tracking-tight text-on-surface">Market Control Panel</h1>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="loadDashboard()" class="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded-lg font-headline font-semibold text-sm transition-all active:scale-95">↻ Refresh Feed</button>
+    </div>
+  </header>
+
+  <!-- Stat cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <div class="bg-surface-container-low p-6 rounded-xl ring-1 ring-outline-variant/10 hover:bg-surface-container transition-colors">
+      <div class="flex justify-between items-start mb-4">
+        <span class="text-on-surface-variant font-label text-xs uppercase tracking-wider">Total Tracked</span>
+        <span class="material-symbols-outlined text-on-surface-variant">inventory_2</span>
+      </div>
+      <div id="stat-total" class="text-3xl font-headline font-bold">—</div>
+      <div class="mt-2 text-xs text-on-surface-variant">active products</div>
+    </div>
+    <div class="bg-surface-container p-6 rounded-xl border-t-2 border-primary pulse-glow relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+        <span class="material-symbols-outlined text-6xl" style="font-variation-settings:'FILL' 1;">shopping_cart</span>
+      </div>
+      <div class="flex justify-between items-start mb-4">
+        <span class="text-primary font-label text-xs uppercase tracking-wider font-bold">Buy Now</span>
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+      </div>
+      <div id="stat-buy" class="text-3xl font-headline font-bold text-on-surface">—</div>
+      <div class="mt-2 text-xs text-primary font-medium">Optimal entry price</div>
+    </div>
+    <div class="bg-surface-container-low p-6 rounded-xl ring-1 ring-outline-variant/10 hover:bg-surface-container transition-colors">
+      <div class="flex justify-between items-start mb-4">
+        <span class="text-tertiary font-label text-xs uppercase tracking-wider font-bold">Wait</span>
+        <span class="material-symbols-outlined text-tertiary">hourglass_empty</span>
+      </div>
+      <div id="stat-wait" class="text-3xl font-headline font-bold">—</div>
+      <div class="mt-2 text-xs text-on-surface-variant">Downward trend anticipated</div>
+    </div>
+    <div class="bg-surface-container-low p-6 rounded-xl ring-1 ring-outline-variant/10 hover:bg-surface-container transition-colors">
+      <div class="flex justify-between items-start mb-4">
+        <span class="text-secondary font-label text-xs uppercase tracking-wider font-bold">Watching</span>
+        <span class="material-symbols-outlined text-secondary">visibility</span>
+      </div>
+      <div id="stat-watching" class="text-3xl font-headline font-bold">—</div>
+      <div class="mt-2 text-xs text-on-surface-variant">Neutral market sentiment</div>
+    </div>
+  </div>
+
+  <!-- Bento grid -->
+  <div class="grid grid-cols-12 gap-8">
+    <!-- Product table -->
+    <div class="col-span-12 xl:col-span-8 space-y-6">
+      <!-- Filter tabs -->
+      <div class="flex items-center justify-between">
+        <div class="flex gap-1 p-1 bg-surface-container-lowest rounded-xl">
+          <button id="filter-all"      onclick="filterProducts('all')"      class="px-6 py-2 bg-surface-container text-primary font-headline font-bold text-sm rounded-lg transition-all">All</button>
+          <button id="filter-buy"      onclick="filterProducts('buy')"      class="px-6 py-2 text-on-surface-variant hover:text-on-surface font-headline font-semibold text-sm rounded-lg transition-all">Buy</button>
+          <button id="filter-wait"     onclick="filterProducts('wait')"     class="px-6 py-2 text-on-surface-variant hover:text-on-surface font-headline font-semibold text-sm rounded-lg transition-all">Wait</button>
+          <button id="filter-watching" onclick="filterProducts('watching')" class="px-6 py-2 text-on-surface-variant hover:text-on-surface font-headline font-semibold text-sm rounded-lg transition-all">Watching</button>
+        </div>
+      </div>
+
+      <!-- Product watchlist table -->
+      <div class="bg-surface-container-low rounded-xl overflow-hidden ring-1 ring-outline-variant/10">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container-high/50 border-b border-outline-variant/5">
+              <th class="px-6 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Product</th>
+              <th class="px-6 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Current Price</th>
+              <th class="px-6 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-center">AI Decision</th>
+              <th class="px-6 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Status</th>
+              <th class="px-6 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant"></th>
+            </tr>
+          </thead>
+          <tbody id="watchlist" class="divide-y divide-outline-variant/5">
+            <tr><td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
+              <div class="spinner mr-2"></div> Loading products...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right sidebar -->
+    <div class="col-span-12 xl:col-span-4 space-y-8">
+      <!-- Intelligence Engine -->
+      <div class="p-6 bg-gradient-to-br from-surface-container to-surface-container-lowest rounded-xl ring-1 ring-primary/20">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse inline-block"></span>
+          <span class="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Intelligence Engine Live</span>
+        </div>
+        <p class="text-sm font-headline text-on-surface leading-relaxed">Analyzing price history for your watchlist items every 8 hours automatically.</p>
+        <div class="mt-6 flex gap-2">
+          <div class="h-1 flex-1 bg-primary/20 rounded-full overflow-hidden">
+            <div class="h-full bg-primary w-2/3"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Active alerts -->
+      <div class="bg-surface-container-low p-6 rounded-xl ring-1 ring-outline-variant/10">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">notifications_active</span>
+          </div>
+          <h4 class="font-headline font-bold">Active Shield</h4>
+        </div>
+        <div class="space-y-4">
+          <div class="p-4 bg-surface-container rounded-lg border-l-4 border-primary">
+            <p class="text-xs font-bold text-on-surface">Auto Price Tracking</p>
+            <p class="text-[11px] text-on-surface-variant mt-1">Prices fetched every 8 hours for all tracked products</p>
+          </div>
+          <div class="p-4 bg-surface-container-high/30 rounded-lg">
+            <p class="text-xs font-bold text-on-surface-variant">Price Alert System</p>
+            <p class="text-[11px] text-on-surface-variant/70 mt-1">Set target price on any product page to get notified</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="lg:ml-64 bg-background w-full py-10 mt-auto border-t border-outline-variant/5">
+  <div class="flex flex-col md:flex-row justify-between items-center px-10 gap-4">
+    <span class="text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant">© 2024 PriceSense Intelligence. All rights reserved.</span>
+    <div class="flex gap-8">
+      <a class="text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant hover:text-on-surface transition-colors" href="#">Privacy Policy</a>
+      <a class="text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant hover:text-on-surface transition-colors" href="#">Terms of Service</a>
+      <a class="text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-2" href="#">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> API Status
+      </a>
+    </div>
+  </div>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  let allProducts = [];
+  let activeFilter = "all";
+
+  async function loadDashboard() {
+    const tbody = document.getElementById("watchlist");
+    tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-on-surface-variant"><div class="spinner mr-2"></div> Loading products...</td></tr>`;
+    try {
+      const products = await getAllProducts();
+      allProducts = products;
+      document.getElementById("stat-total").textContent    = products.length;
+      document.getElementById("stat-buy").textContent      = products.filter(p => p.verdict === "buy").length;
+      document.getElementById("stat-wait").textContent     = products.filter(p => p.verdict === "wait").length;
+      document.getElementById("stat-watching").textContent = products.filter(p => !p.verdict || p.verdict === "watching").length;
+      renderFiltered();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">⚠️ Could not load products — make sure backend is running on port 8000</td></tr>`;
+    }
+  }
+
+  function renderFiltered() {
+    const tbody = document.getElementById("watchlist");
+    const filtered = activeFilter === "all" ? allProducts
+      : allProducts.filter(p => activeFilter === "watching" ? (!p.verdict || p.verdict === "watching") : p.verdict === activeFilter);
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-16 text-center text-on-surface-variant">
+        <p class="text-lg font-headline mb-2">${activeFilter === "all" ? "No products tracked yet" : "No " + activeFilter + " products"}</p>
+        <p class="text-sm">${activeFilter === "all" ? "Paste a product URL above to start tracking" : "Try a different filter"}</p>
+      </td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(p => {
+      const thumb = p.thumbnail
+        ? `<img src="${p.thumbnail}" class="w-12 h-12 rounded-lg object-cover" onerror="this.outerHTML='<div class=\\'w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-xl\\'>${platformEmoji(p.platform)}</div>'">`
+        : `<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-xl">${platformEmoji(p.platform)}</div>`;
+
+      const verdictHtml = p.verdict === "buy"
+        ? `<span class="inline-block px-5 py-1.5 bg-primary text-on-primary font-headline font-black tracking-wider text-xs rounded shadow-[0_0_15px_rgba(105,218,255,0.4)]">BUY</span>`
+        : p.verdict === "wait"
+          ? `<span class="inline-block px-5 py-1.5 bg-surface-container-highest text-tertiary font-headline font-black tracking-wider text-xs rounded ring-1 ring-tertiary/30">WAIT</span>`
+          : p.verdict
+            ? `<span class="inline-block px-4 py-1.5 bg-surface-container text-on-surface-variant font-headline font-black tracking-wider text-[10px] rounded uppercase">Watching</span>`
+            : `<span class="inline-block px-4 py-1.5 bg-surface-container text-on-surface-variant font-headline font-black tracking-wider text-[10px] rounded uppercase">Collecting</span>`;
+
+      const statusDot = p.scrape_status === "success"
+        ? `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>`
+        : `<span class="w-1.5 h-1.5 rounded-full bg-error inline-block mr-1"></span>`;
+
+      return `<tr class="group hover:bg-surface-container-high transition-colors cursor-pointer" onclick="window.location.href='product.html?id=${p.id}'">
+        <td class="px-6 py-5">
+          <div class="flex items-center gap-4">
+            ${thumb}
+            <div>
+              <p class="font-headline font-bold text-sm text-on-surface truncate max-w-[200px]">${escapeHtml(p.name || "Unknown product")}</p>
+              <p class="text-[10px] text-on-surface-variant mt-0.5">${formatPlatform(p.platform)} · ${p.days_tracked} data points</p>
+            </div>
+          </div>
+        </td>
+        <td class="px-6 py-5">
+          <span class="font-headline font-extrabold text-lg">${formatPrice(p.current_price)}</span>
+          <span class="text-[10px] text-on-surface-variant block mt-0.5">${p.last_fetched || "Pending"}</span>
+        </td>
+        <td class="px-6 py-5 text-center">${verdictHtml}</td>
+        <td class="px-6 py-5">
+          <div class="flex items-center gap-1.5 text-xs text-on-surface-variant">
+            ${statusDot}${p.scrape_status === "success" ? "Live" : "Stale"}
+          </div>
+        </td>
+        <td class="px-6 py-5 text-right">
+          <button onclick="event.stopPropagation();handleDeleteProduct(${p.id})" class="p-2 text-on-surface-variant hover:text-error transition-colors">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </td>
+      </tr>`;
+    }).join("");
+  }
+
+  function filterProducts(filter) {
+    activeFilter = filter;
+    ["all","buy","wait","watching"].forEach(f => {
+      const btn = document.getElementById(`filter-${f}`);
+      if (!btn) return;
+      if (f === filter) {
+        btn.className = "px-6 py-2 bg-surface-container text-primary font-headline font-bold text-sm rounded-lg transition-all";
+      } else {
+        btn.className = "px-6 py-2 text-on-surface-variant hover:text-on-surface font-headline font-semibold text-sm rounded-lg transition-all";
+      }
+    });
+    renderFiltered();
+  }
+
+  async function handleTrackSubmit() {
+    const input = document.getElementById("url-input");
+    const btn   = document.getElementById("track-btn");
+    const url   = input.value.trim();
+    if (!url || !url.startsWith("http")) { showToast("Please enter a valid URL", "error"); return; }
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span>`;
+    try {
+      const result = await trackProduct(url);
+      input.value = "";
+      showToast(result.message === "Product already being tracked" ? "Already tracking this!" : `Added: ${result.product.name}`, "success");
+      await loadDashboard();
+    } catch (err) {
+      showToast(err.message || "Could not add product", "error");
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = "+ Track";
+    }
+  }
+
+  async function handleDeleteProduct(id) {
+    if (!confirm("Stop tracking this product?")) return;
+    try {
+      await deleteProduct(id);
+      showToast("Product removed", "info");
+      await loadDashboard();
+    } catch (err) {
+      showToast("Could not remove product", "error");
+    }
+  }
+
+  document.getElementById("track-form").addEventListener("submit", (e) => { e.preventDefault(); handleTrackSubmit(); });
+
+  function platformEmoji(p) {
+    return { amazon:"📦", flipkart:"🛒", myntra:"👗", croma:"💻", reliancedigital:"📱", meesho:"🛍️", tatacliq:"🏷️", snapdeal:"⚡" }[p] || "🏷️";
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  loadDashboard();
+</script>
+</body></html>

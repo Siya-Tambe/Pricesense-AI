@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PriceSense Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "tertiary-fixed-dim": "#51a7fe", "error-container": "#9f0519", "secondary-dim": "#d4d4d7",
+          "primary-dim": "#00c0ea", "outline-variant": "#46484a", "surface-dim": "#0c0e10",
+          "surface-container-low": "#111416", "on-primary-fixed": "#002a35", "tertiary-dim": "#4aa2f9",
+          "on-surface-variant": "#aaabad", "primary-container": "#00cffc", "on-background": "#eeeef0",
+          "on-tertiary-fixed-variant": "#003b68", "surface-container-highest": "#232629",
+          "surface-bright": "#292c30", "outline": "#747578", "on-error-container": "#ffa8a3",
+          "on-error": "#490006", "on-secondary-container": "#d0d0d3", "on-secondary-fixed-variant": "#5a5c5e",
+          "error-dim": "#d7383b", "tertiary-fixed": "#72b5ff", "tertiary-container": "#4aa2f9",
+          "on-secondary": "#505254", "primary": "#69daff", "error": "#ff716c",
+          "on-secondary-fixed": "#3e3f42", "on-tertiary-fixed": "#001930", "surface-tint": "#69daff",
+          "secondary-fixed": "#e2e2e5", "primary-fixed": "#00cffc", "inverse-surface": "#f9f9fc",
+          "primary-fixed-dim": "#00c0ea", "on-primary-container": "#004050", "inverse-primary": "#006880",
+          "surface-variant": "#232629", "on-tertiary": "#002e52", "on-primary-fixed-variant": "#004a5c",
+          "surface-container-high": "#1d2023", "on-tertiary-container": "#00213e",
+          "surface-container-lowest": "#000000", "secondary": "#e2e2e5", "on-surface": "#eeeef0",
+          "surface-container": "#171a1c", "secondary-container": "#454749", "inverse-on-surface": "#545557",
+          "on-primary": "#004a5d", "secondary-fixed-dim": "#d4d4d7", "surface": "#0c0e10",
+          "tertiary": "#65afff", "background": "#0c0e10"
+        },
+        fontFamily: { "headline": ["Manrope"], "body": ["Inter"], "label": ["Inter"] },
+        borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .obsidian-glass { background: rgba(17, 20, 22, 0.8); backdrop-filter: blur(20px); }
+  .gradient-text { background: linear-gradient(135deg, #69daff 0%, #00cffc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .wait-glow { box-shadow: 0 0 40px -10px rgba(255, 113, 108, 0.3); }
+  .buy-glow  { box-shadow: 0 0 40px -10px rgba(105, 218, 255, 0.4); }
+  .spinner { width: 20px; height: 20px; border: 2px solid rgba(105,218,255,0.15); border-top-color: #69daff; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: 28px; right: 28px; background: #1d2023; color: #eeeef0; padding: 13px 20px; border-radius: 8px; font-size: 14px; z-index: 999; opacity: 0; transform: translateY(12px); transition: opacity 0.3s, transform 0.3s; pointer-events: none; border: 1px solid rgba(70,72,74,0.3); max-width: 320px; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { border-left: 3px solid #69daff; }
+  .toast.error   { border-left: 3px solid #ff716c; }
+  .toast.info    { border-left: 3px solid #65afff; }
+</style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 selection:text-primary">
+
+<!-- ── Nav (original Stitch, unchanged) ── -->
+<nav class="fixed top-0 w-full z-50 obsidian-glass flex items-center justify-between px-8 h-20 shadow-[0_40px_60px_-15px_rgba(0,0,0,0.4)]">
+  <div class="flex items-center gap-12">
+    <a href="index.html" class="text-2xl font-bold tracking-tighter text-primary font-headline">PriceSense</a>
+    <div class="hidden md:flex gap-8">
+      <a class="font-headline font-semibold text-primary border-b-2 border-primary pb-1" href="#">Intelligence</a>
+      <a class="font-headline font-semibold text-on-surface-variant hover:text-on-background transition-colors" href="dashboard.html">Portfolio</a>
+      <a class="font-headline font-semibold text-on-surface-variant hover:text-on-background transition-colors" href="#">Markets</a>
+      <a class="font-headline font-semibold text-on-surface-variant hover:text-on-background transition-colors" href="#">Alerts</a>
+    </div>
+  </div>
+  <div class="flex items-center gap-6">
+    <div class="hidden lg:flex items-center bg-surface-container px-4 py-2 rounded-lg border border-outline-variant/15">
+      <span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+      <input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface placeholder:text-on-surface-variant outline-none" placeholder="Search assets..." type="text"/>
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+      <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+      <a href="dashboard.html" class="text-xs text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">arrow_back</span> Watchlist
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto space-y-16">
+
+  <!-- Section 1: Product Header -->
+  <header id="product-header" class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-2 border-primary pl-6">
+    <!-- Loading skeleton -->
+    <div>
+      <span class="text-xs font-label uppercase tracking-[0.05em] text-on-surface-variant mb-2 block">Premium Analysis Model v4.2</span>
+      <div class="w-72 h-10 bg-surface-container rounded animate-pulse mb-4"></div>
+      <div class="flex items-center gap-4">
+        <div class="w-28 h-8 bg-surface-container rounded animate-pulse"></div>
+        <div class="w-24 h-6 bg-surface-container rounded-full animate-pulse"></div>
+      </div>
+    </div>
+    <div class="w-48 h-28 rounded-xl bg-surface-container-low border border-outline-variant/10 animate-pulse"></div>
+  </header>
+
+  <!-- Section 2: Hero Verdict -->
+  <section id="verdict-section" class="relative">
+    <div class="max-w-4xl mx-auto rounded-[2rem] bg-surface-container-low border border-outline-variant/15 p-12 text-center relative overflow-hidden">
+      <div class="flex items-center justify-center py-8">
+        <div class="spinner" style="width:36px;height:36px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Chart + Intelligence Breakdown -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+    <!-- Chart -->
+    <div class="lg:col-span-8 bg-surface-container rounded-[1.5rem] p-8 border border-outline-variant/10 flex flex-col justify-between">
+      <div class="flex justify-between items-start mb-8">
+        <div>
+          <h3 class="text-xl font-headline font-bold text-on-surface mb-1">Forecast Model</h3>
+          <p id="chart-subtitle" class="text-on-surface-variant text-sm font-body">Loading price history...</p>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-primary/40"></span>
+            <span class="text-xs text-on-surface-variant font-label uppercase">Actual</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full border-2 border-dashed border-primary" style="background:transparent;"></span>
+            <span class="text-xs text-on-surface-variant font-label uppercase">Predicted</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs">🏷️</span>
+            <span class="text-xs text-on-surface-variant font-label uppercase">Sale</span>
+          </div>
+        </div>
+      </div>
+      <!-- Chart canvas injected here by JS -->
+      <div id="chart-container" class="h-64 w-full relative">
+        <div class="flex items-center justify-center h-full">
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <!-- Date labels row -->
+      <div id="chart-footer" class="flex justify-between mt-8 border-t border-outline-variant/10 pt-6">
+        <span class="text-xs text-on-surface-variant font-label uppercase">—</span>
+        <span class="text-xs text-primary font-bold font-label uppercase tracking-tighter">Current Day</span>
+        <span class="text-xs text-on-surface-variant font-label uppercase">—</span>
+      </div>
+    </div>
+
+    <!-- Intelligence Breakdown (original Stitch layout, text replaced by JS) -->
+    <div class="lg:col-span-4 bg-surface-container-low rounded-[1.5rem] p-8 border border-outline-variant/10 space-y-8">
+      <h3 class="text-xl font-headline font-bold text-on-surface flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary">psychology</span>
+        Intelligence Breakdown
+      </h3>
+      <div id="intelligence-items" class="space-y-6">
+        <!-- filled by JS -->
+        <div class="flex items-center justify-center py-4"><div class="spinner"></div></div>
+      </div>
+      <div class="pt-4">
+        <div class="bg-surface-container-highest p-4 rounded-xl border border-outline-variant/15 flex items-center justify-between">
+          <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant">Model Confidence</span>
+          <span id="confidence-display" class="text-primary font-bold">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Stats Row -->
+  <div id="stat-cards" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/10">
+      <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Current Price</p>
+      <p class="text-2xl font-headline font-bold text-on-surface">—</p>
+    </div>
+    <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/10">
+      <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">All-time Low</p>
+      <p class="text-2xl font-headline font-bold text-primary">—</p>
+    </div>
+    <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/10">
+      <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">AI Target Price</p>
+      <p class="text-2xl font-headline font-bold text-secondary-dim">—</p>
+    </div>
+    <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/10">
+      <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Volatility</p>
+      <p class="text-2xl font-headline font-bold text-on-surface">—</p>
+    </div>
+  </div>
+
+  <!-- Section 5: Alert + History Table (original Stitch layout) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+
+    <!-- Smart Price Alert (original Stitch card) -->
+    <div class="bg-surface-container-high rounded-3xl p-8 border border-outline-variant/20 lg:sticky lg:top-24">
+      <h3 class="text-xl font-headline font-bold text-on-surface mb-6">Smart Price Alert</h3>
+      <div id="alert-panel" class="space-y-6">
+        <div class="flex items-center justify-center py-4"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- Recent Price Evolution (original Stitch table) -->
+    <div class="lg:col-span-2 bg-surface-container rounded-3xl p-8 border border-outline-variant/10">
+      <div class="flex items-center justify-between mb-8">
+        <h3 class="text-xl font-headline font-bold text-on-surface">Recent Price Evolution</h3>
+        <span id="data-status" class="text-xs font-label uppercase tracking-widest text-on-surface-variant"></span>
+      </div>
+      <div id="history-table-content" class="overflow-hidden">
+        <div class="flex items-center justify-center py-8"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Footer (original Stitch, unchanged) -->
+<footer class="bg-surface-container-lowest py-24 border-t border-outline-variant/15">
+  <div class="max-w-7xl mx-auto flex flex-col items-center gap-8 px-8">
+    <div class="flex gap-12 flex-wrap justify-center">
+      <a class="text-[0.6875rem] font-label uppercase tracking-[0.05em] text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Intelligence</a>
+      <a class="text-[0.6875rem] font-label uppercase tracking-[0.05em] text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Protocol</a>
+      <a class="text-[0.6875rem] font-label uppercase tracking-[0.05em] text-on-surface-variant hover:text-primary transition-colors" href="#">API Docs</a>
+      <a class="text-[0.6875rem] font-label uppercase tracking-[0.05em] text-on-surface-variant hover:text-primary transition-colors" href="#">System Status</a>
+    </div>
+    <div class="text-center space-y-4">
+      <p class="text-[0.6875rem] font-label uppercase tracking-[0.05em] text-on-surface-variant">© 2024 PriceSense Intelligence. Obsidian Architect Grade.</p>
+      <div class="flex justify-center gap-4 opacity-50">
+        <span class="material-symbols-outlined text-on-surface-variant">verified_user</span>
+        <span class="material-symbols-outlined text-on-surface-variant">encrypted</span>
+        <span class="material-symbols-outlined text-on-surface-variant">cloud_done</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<!-- Chart.js + annotation plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+
+<!-- Your existing JS files (unchanged) -->
+<script src="js/api.js"></script>
+<script src="js/chart.js"></script>
+
+<script>
+  // ── helpers ──────────────────────────────────────────────────
+  function getProductId() {
+    return new URLSearchParams(window.location.search).get("id");
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function platformEmoji(p) {
+    return ({amazon:"📦",flipkart:"🛒",myntra:"👗",croma:"💻",
+              reliancedigital:"📱",meesho:"🛍️",tatacliq:"🏷️",snapdeal:"⚡"})[p] || "🏷️";
+  }
+
+  // ── load product ─────────────────────────────────────────────
+  async function loadProduct() {
+    const id = getProductId();
+    if (!id) { window.location.href = "dashboard.html"; return; }
+
+    try {
+      const p = await getProduct(id);
+      window.currentProduct = p;
+      renderHeader(p);
+      renderVerdictSection(p);
+      renderStatCards(p);
+      renderChartSection(p);
+      renderIntelligence(p);
+      renderAlertPanel(p);
+      renderHistoryTable(p.price_history);
+      renderDataStatus(p);
+    } catch (err) {
+      document.querySelector("main").innerHTML = `
+        <div class="text-center py-32">
+          <p class="text-5xl mb-6">⚠️</p>
+          <h2 class="font-headline text-3xl font-bold mb-4">Could not load product</h2>
+          <p class="text-on-surface-variant mb-8">${escapeHtml(err.message)}</p>
+          <a href="dashboard.html" class="px-8 py-4 bg-primary text-on-primary rounded-xl font-headline font-bold">← Back to watchlist</a>
+        </div>`;
+    }
+  }
+
+  // ── Section 1: header ────────────────────────────────────────
+  function renderHeader(p) {
+    const el    = document.getElementById("product-header");
+    const thumb = p.thumbnail
+      ? `<img class="w-full h-full object-cover rounded-lg" src="${p.thumbnail}" onerror="this.outerHTML='<div class=\\'w-full h-full flex items-center justify-center text-4xl\\'>${platformEmoji(p.platform)}</div>'">`
+      : `<div class="w-full h-full flex items-center justify-center text-4xl">${platformEmoji(p.platform)}</div>`;
+
+    el.innerHTML = `
+      <div>
+        <span class="text-xs font-label uppercase tracking-[0.05em] text-on-surface-variant mb-2 block">
+          ${escapeHtml(formatPlatform(p.platform))} · ${p.days_tracked} data points collected
+        </span>
+        <h1 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-on-surface">
+          ${escapeHtml(p.name || "Unknown product")}
+        </h1>
+        <div class="flex items-center gap-4 mt-4 flex-wrap">
+          <span class="text-3xl font-headline font-bold text-on-surface">${formatPrice(p.current_price)}</span>
+          <span class="px-3 py-1 rounded-full bg-error-container/20 text-error text-xs font-bold font-label uppercase tracking-wider">Current Price</span>
+          <a href="${p.url}" target="_blank" class="text-xs text-primary hover:underline flex items-center gap-1">
+            View on ${escapeHtml(formatPlatform(p.platform))}
+            <span class="material-symbols-outlined text-sm">open_in_new</span>
+          </a>
+        </div>
+      </div>
+      <div class="w-48 h-28 rounded-xl bg-surface-container-low p-2 border border-outline-variant/10 flex-shrink-0">
+        ${thumb}
+      </div>`;
+  }
+
+  // ── Section 2: verdict hero ──────────────────────────────────
+  function renderVerdictSection(p) {
+    const el   = document.getElementById("verdict-section");
+    const pred = p.prediction || {};
+    const days = p.days_tracked || 0;
+
+    // Not enough data yet
+    if (days < 2) {
+      el.innerHTML = `
+        <div class="max-w-4xl mx-auto rounded-[2rem] bg-surface-container-low border border-outline-variant/15 p-12 text-center relative overflow-hidden">
+          <div class="text-6xl mb-6">📊</div>
+          <h2 class="text-4xl font-headline font-bold mb-4 text-on-surface">Still collecting data</h2>
+          <p class="text-on-surface-variant max-w-lg mx-auto mb-8">
+            PriceSense needs at least 2 price points to analyse trends.<br/>
+            Prices are fetched automatically every 8 hours.
+          </p>
+          <div class="w-64 mx-auto bg-surface-container-highest h-2 rounded-full overflow-hidden mb-3">
+            <div class="h-full bg-primary rounded-full" style="width:${Math.min((days/7)*100,100)}%"></div>
+          </div>
+          <p class="text-xs text-primary uppercase tracking-widest">${days} of 7 recommended data points</p>
+        </div>`;
+      return;
+    }
+
+    if (!pred.verdict) {
+      el.innerHTML = `
+        <div class="max-w-4xl mx-auto rounded-[2rem] bg-surface-container-low border border-outline-variant/15 p-12 text-center">
+          <div class="flex items-center justify-center gap-3 py-4">
+            <div class="spinner" style="width:28px;height:28px;"></div>
+            <p class="text-on-surface-variant">Analysing price trends...</p>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const isWait = pred.verdict === "wait";
+    const isBuy  = pred.verdict === "buy";
+
+    const glowClass    = isWait ? "wait-glow" : isBuy ? "buy-glow" : "";
+    const ambientColor = isWait ? "bg-error/10" : "bg-primary/5";
+    const verdictBg    = isWait ? "bg-error text-on-error" : isBuy ? "bg-primary text-on-primary" : "bg-surface-container-highest text-on-surface-variant";
+    const verdictWord  = isWait ? "WAIT" : isBuy ? "BUY" : "WATCH";
+    const pulseColor   = isWait ? "bg-error/20" : "bg-primary/20";
+    const changeAmt    = pred.stats?.price_change_pct != null
+      ? `${Math.abs(pred.stats.price_change_pct).toFixed(1)}%` : null;
+    const changeWord   = isWait ? "drop" : isBuy ? "rise" : "change";
+    const confPct      = pred.confidence === "high" ? "92%" : pred.confidence === "medium" ? "74%" : "48%";
+    const confLabel    = (pred.confidence || "").charAt(0).toUpperCase() + (pred.confidence || "").slice(1);
+    const heroText     = changeAmt
+      ? `Price may ${changeWord} <span class="${isWait ? "text-error" : "text-primary"}">${changeAmt}</span> in 7 days`
+      : escapeHtml((pred.reasoning || "Analysing market conditions").split(".")[0]);
+
+    el.innerHTML = `
+      <div class="max-w-4xl mx-auto rounded-[2rem] bg-surface-container-low border border-outline-variant/15 p-12 text-center ${glowClass} relative overflow-hidden">
+        <div class="absolute -top-24 -left-24 w-64 h-64 ${ambientColor} blur-[100px] rounded-full"></div>
+        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary/5 blur-[100px] rounded-full"></div>
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="mb-8 scale-150 flex items-center justify-center">
+            <div class="absolute w-24 h-24 rounded-full ${pulseColor} animate-pulse"></div>
+            <span class="relative px-8 py-3 ${verdictBg} font-headline font-extrabold text-4xl rounded-2xl tracking-widest shadow-2xl">
+              ${verdictWord}
+            </span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-headline font-bold mb-6 text-on-surface max-w-2xl">
+            ${heroText}
+          </h2>
+          <div class="flex flex-col md:flex-row items-center gap-8 mt-4">
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_#69daff]"></div>
+              <span class="text-on-surface-variant font-label text-sm uppercase tracking-widest">
+                Confidence Index:
+                <span class="text-on-surface font-bold italic">${confPct} (${confLabel})</span>
+              </span>
+            </div>
+            <div class="h-4 w-px bg-outline-variant/30 hidden md:block"></div>
+            <button onclick="toggleReasoning()"
+              class="px-8 py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl shadow-lg active:scale-95 transition-all duration-200">
+              View Deep Analytics
+            </button>
+          </div>
+          <!-- Reasoning panel (hidden by default) -->
+          <div id="reasoning-panel" class="hidden mt-8 w-full max-w-2xl bg-surface-container rounded-2xl p-6 border border-outline-variant/15 text-left">
+            <p class="text-on-surface-variant text-sm leading-relaxed">${escapeHtml(pred.reasoning || "")}</p>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function toggleReasoning() {
+    const el = document.getElementById("reasoning-panel");
+    if (el) el.classList.toggle("hidden");
+  }
+
+  // ── Section 3: chart ─────────────────────────────────────────
+  function renderChartSection(p) {
+    const container = document.getElementById("chart-container");
+    const footer    = document.getElementById("chart-footer");
+    const subtitle  = document.getElementById("chart-subtitle");
+
+    if (!p.price_history || p.price_history.length < 2) {
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full text-on-surface-variant gap-2">
+          <p class="text-sm">Not enough data yet</p>
+          <p class="text-xs opacity-60">Check back after a few more auto-fetches</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = `<canvas id="price-chart" style="height:256px;"></canvas>`;
+
+    const pred = p.prediction || {};
+    renderChart("price-chart", p.price_history, pred.forecast_day3, pred.forecast_day7);
+
+    if (subtitle) {
+      subtitle.textContent = `${p.days_tracked} data points · ${p.days_tracked < 7 ? "Forecast unlocks at 7 points" : "Forecast active"}`;
+    }
+
+    // Update date labels in footer
+    if (footer && p.price_history.length > 0) {
+      const sorted  = [...p.price_history].sort((a,b) => new Date(a.date) - new Date(b.date));
+      const first   = new Date(sorted[0].date).toLocaleDateString("en-IN", {day:"numeric", month:"short"});
+      const last    = new Date(sorted[sorted.length-1].date).toLocaleDateString("en-IN", {day:"numeric", month:"short"});
+      footer.innerHTML = `
+        <span class="text-xs text-on-surface-variant font-label uppercase">${first}</span>
+        <span class="text-xs text-primary font-bold font-label uppercase tracking-tighter">Current Day</span>
+        <span class="text-xs text-on-surface-variant font-label uppercase">${last}</span>`;
+    }
+  }
+
+  // ── Intelligence breakdown ────────────────────────────────────
+  function renderIntelligence(p) {
+    const pred    = p.prediction || {};
+    const confEl  = document.getElementById("confidence-display");
+    const itemsEl = document.getElementById("intelligence-items");
+
+    if (confEl) {
+      const confPct = pred.confidence === "high" ? "98.4%" : pred.confidence === "medium" ? "74%" : "48%";
+      confEl.textContent = confPct;
+    }
+
+    const volLabel = pred.stats?.volatility != null
+      ? (pred.stats.volatility < 5 ? "Low" : pred.stats.volatility < 15 ? "Moderate" : "High") : "—";
+    const volText = pred.stats?.volatility != null
+      ? `Volatility is ${volLabel.toLowerCase()} at ${pred.stats.volatility.toFixed(1)}%, suggesting price ${pred.stats.volatility < 5 ? "stability" : "fluctuation"}.`
+      : "Volatility data will appear after more fetches.";
+    const trendText = pred.verdict
+      ? `Current verdict: ${pred.verdict.toUpperCase()}. ${pred.stats?.price_change_pct != null ? `Expected ${pred.stats.price_change_pct > 0 ? "+" : ""}${pred.stats.price_change_pct.toFixed(1)}% change in 7 days.` : ""}`
+      : "Trend analysis will appear after sufficient data.";
+    const seasonText = p.days_tracked >= 7
+      ? "Sufficient data collected to start identifying seasonal pricing patterns."
+      : `${p.days_tracked} of 7+ data points collected. Patterns will emerge soon.`;
+
+    itemsEl.innerHTML = [
+      { icon: "calendar_month", title: "Seasonal Patterns",  text: seasonText  },
+      { icon: "storefront",     title: "Market Activity",    text: trendText   },
+      { icon: "monitoring",     title: "Market Volatility",  text: volText     },
+    ].map(item => `
+      <div class="flex gap-4">
+        <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary text-lg">${item.icon}</span>
+        </div>
+        <div>
+          <p class="text-on-surface font-semibold text-sm">${item.title}</p>
+          <p class="text-on-surface-variant text-xs mt-1 leading-relaxed">${item.text}</p>
+        </div>
+      </div>`).join("");
+  }
+
+  // ── Section 4: stat cards ────────────────────────────────────
+  function renderStatCards(p) {
+    const el    = document.getElementById("stat-cards");
+    const stats = p.stats    || {};
+    const pred  = p.prediction || {};
+    const volLabel = pred.stats?.volatility != null
+      ? (pred.stats.volatility < 5 ? "LOW" : pred.stats.volatility < 15 ? "MED" : "HIGH") : "—";
+
+    el.innerHTML = `
+      <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/10">
+        <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Current Price</p>
+        <p class="text-2xl font-headline font-bold text-on-surface">${formatPrice(p.current_price)}</p>
+      </div>
+      <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/10">
+        <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">All-time Low</p>
+        <p class="text-2xl font-headline font-bold text-primary">${formatPrice(stats.all_time_low)}</p>
+      </div>
+      <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/10">
+        <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">AI Target Price</p>
+        <p class="text-2xl font-headline font-bold text-secondary-dim">${formatPrice(pred.forecast_day7)}</p>
+      </div>
+      <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/10">
+        <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Volatility</p>
+        <p class="text-2xl font-headline font-bold text-on-surface">${volLabel}</p>
+      </div>`;
+  }
+
+  // ── Alert panel ───────────────────────────────────────────────
+  function renderAlertPanel(p) {
+    const el       = document.getElementById("alert-panel");
+    const hasAlert = p.alert_enabled && p.alert_price;
+
+    el.innerHTML = `
+      <div>
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-3">Target Price Alert</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-bold">₹</span>
+          <input id="alert-input" type="number"
+            value="${p.alert_price || ""}"
+            placeholder="${p.current_price ? Math.round(p.current_price * 0.9) : "Enter price"}"
+            class="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl py-4 pl-10 pr-4 text-on-surface font-headline font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"/>
+        </div>
+      </div>
+      <div class="p-4 bg-primary/5 rounded-xl border border-primary/20 flex gap-3">
+        <span class="material-symbols-outlined text-primary text-sm">info</span>
+        <p class="text-[0.8rem] leading-tight text-on-surface-variant">
+          ${hasAlert
+            ? `Active alert set at ${formatPrice(p.alert_price)}. We'll notify you when it drops below this.`
+            : "Set a target price and we'll notify you as soon as it hits your target."}
+        </p>
+      </div>
+      <button onclick="handleSetAlert()"
+        class="w-full py-4 bg-on-background text-surface font-headline font-bold rounded-xl hover:bg-primary transition-all duration-300">
+        ${hasAlert ? "Update Alert" : "Set Active Alert"}
+      </button>
+      ${hasAlert ? `
+      <button onclick="handleDisableAlert()"
+        class="w-full py-2 text-xs text-on-surface-variant hover:text-error transition-colors">
+        Disable alert
+      </button>` : ""}`;
+  }
+
+  // ── History table ─────────────────────────────────────────────
+  function renderHistoryTable(history) {
+    const el = document.getElementById("history-table-content");
+    if (!history || history.length === 0) {
+      el.innerHTML = `<p class="text-center text-on-surface-variant text-sm py-8">No price history recorded yet.</p>`;
+      return;
+    }
+    const sorted = [...history].sort((a,b) => new Date(b.date) - new Date(a.date));
+    el.innerHTML = `
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-outline-variant/10">
+            <th class="pb-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Observation Date</th>
+            <th class="pb-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Recorded Price</th>
+            <th class="pb-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Market Shift</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/5">
+          ${sorted.map((row, i) => {
+            const prev   = sorted[i + 1];
+            const change = prev ? row.price - prev.price : null;
+            const shiftHtml = change === null
+              ? `<span class="text-on-surface-variant text-xs font-bold">—</span>`
+              : change < 0
+                ? `<span class="text-primary text-xs flex items-center gap-1 font-bold"><span class="material-symbols-outlined text-sm">trending_down</span> -${formatPrice(Math.abs(change))}</span>`
+                : change > 0
+                  ? `<span class="text-error text-xs flex items-center gap-1 font-bold"><span class="material-symbols-outlined text-sm">trending_up</span> +${formatPrice(change)}</span>`
+                  : `<span class="text-on-surface-variant text-xs flex items-center gap-1 font-bold"><span class="material-symbols-outlined text-sm">remove</span> Stable</span>`;
+            const date = new Date(row.date).toLocaleDateString("en-IN", {day:"numeric", month:"long", year:"numeric"});
+            return `
+              <tr class="hover:bg-surface-container-high transition-colors group">
+                <td class="py-5 font-medium text-on-surface">${date}</td>
+                <td class="py-5 font-headline font-bold text-on-surface">${formatPrice(row.price)}</td>
+                <td class="py-5">${shiftHtml}</td>
+              </tr>`;
+          }).join("")}
+        </tbody>
+      </table>`;
+  }
+
+  // ── Data status ───────────────────────────────────────────────
+  function renderDataStatus(p) {
+    const el = document.getElementById("data-status");
+    if (!el) return;
+    el.textContent = p.scrape_status !== "success"
+      ? "⚠️ Last fetch failed"
+      : `Updated ${p.last_fetched || "recently"}`;
+  }
+
+  // ── Alert handlers ────────────────────────────────────────────
+  async function handleSetAlert() {
+    const id    = getProductId();
+    const input = document.getElementById("alert-input");
+    if (!id || !input) return;
+    const price = parseFloat(input.value);
+    if (!price || price <= 0) { showToast("Please enter a valid price", "error"); return; }
+    try {
+      await setAlert(parseInt(id), price, true);
+      showToast(`Alert set for ${formatPrice(price)}`, "success");
+      await loadProduct();
+    } catch (err) { showToast("Could not set alert: " + err.message, "error"); }
+  }
+
+  async function handleDisableAlert() {
+    const id = getProductId();
+    if (!id || !window.currentProduct) return;
+    try {
+      await setAlert(parseInt(id), window.currentProduct.alert_price, false);
+      showToast("Alert disabled", "info");
+      await loadProduct();
+    } catch (err) { showToast("Could not disable alert", "error"); }
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────
+  document.addEventListener("DOMContentLoaded", loadProduct);
+</script>
+</body></html>

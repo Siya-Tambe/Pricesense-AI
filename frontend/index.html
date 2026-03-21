@@ -1,0 +1,262 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>PriceSense Intelligence - AI-Powered Shopping Decisions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary-dim": "#00c0ea", "secondary-fixed-dim": "#d4d4d7", "on-secondary-fixed": "#3e3f42",
+          "on-background": "#eeeef0", "tertiary": "#65afff", "on-primary-fixed-variant": "#004a5c",
+          "primary-fixed-dim": "#00c0ea", "on-error-container": "#ffa8a3", "on-primary-fixed": "#002a35",
+          "secondary-dim": "#d4d4d7", "primary-container": "#00cffc", "on-surface-variant": "#aaabad",
+          "tertiary-fixed-dim": "#51a7fe", "outline-variant": "#46484a", "error": "#ff716c",
+          "on-tertiary-container": "#00213e", "on-primary-container": "#004050", "tertiary-fixed": "#72b5ff",
+          "surface-variant": "#232629", "surface": "#0c0e10", "tertiary-dim": "#4aa2f9",
+          "error-container": "#9f0519", "surface-container": "#171a1c", "on-tertiary-fixed": "#001930",
+          "surface-bright": "#292c30", "on-secondary-container": "#d0d0d3", "secondary-container": "#454749",
+          "surface-tint": "#69daff", "surface-dim": "#0c0e10", "on-tertiary": "#002e52",
+          "outline": "#747578", "inverse-on-surface": "#545557", "secondary-fixed": "#e2e2e5",
+          "on-surface": "#eeeef0", "error-dim": "#d7383b", "on-primary": "#004a5d",
+          "surface-container-highest": "#232629", "tertiary-container": "#4aa2f9", "on-secondary": "#505254",
+          "surface-container-high": "#1d2023", "surface-container-lowest": "#000000", "primary-fixed": "#00cffc",
+          "inverse-primary": "#006880", "primary": "#69daff", "inverse-surface": "#f9f9fc",
+          "surface-container-low": "#111416", "on-tertiary-fixed-variant": "#003b68",
+          "secondary": "#e2e2e5", "on-error": "#490006", "on-secondary-fixed-variant": "#5a5c5e",
+          "background": "#0c0e10"
+        },
+        fontFamily: { "headline": ["Manrope"], "body": ["Inter"], "label": ["Inter"] },
+        borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  body { background-color: #0c0e10; color: #eeeef0; font-family: 'Inter', sans-serif; }
+  .glass-nav { background: rgba(17, 20, 22, 0.8); backdrop-filter: blur(20px); }
+  .obsidian-gradient { background: linear-gradient(135deg, #69daff 0%, #00cffc 100%); }
+  .intelligence-pulse { width: 8px; height: 8px; background-color: #69daff; border-radius: 50%; box-shadow: 0 0 12px #69daff; }
+  .ghost-border { border: 1px solid rgba(70, 72, 74, 0.15); }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(105,218,255,0.2); border-top-color: #69daff; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: 28px; right: 28px; background: #1d2023; color: #eeeef0; padding: 13px 20px; border-radius: 8px; font-size: 14px; z-index: 999; opacity: 0; transform: translateY(12px); transition: opacity 0.3s, transform 0.3s; pointer-events: none; border: 1px solid rgba(70,72,74,0.3); max-width: 320px; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { border-left: 3px solid #69daff; }
+  .toast.error   { border-left: 3px solid #ff716c; }
+  .toast.info    { border-left: 3px solid #65afff; }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="fixed top-0 w-full z-50 glass-nav border-b border-outline-variant/10 shadow-[0_40px_60px_-5px_rgba(0,0,0,0.4)]">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-20">
+    <div class="text-2xl font-bold text-slate-50 tracking-tighter font-headline">PriceSense</div>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#" class="text-primary border-b-2 border-primary pb-1 font-headline font-semibold tracking-tight">Features</a>
+      <a href="#" class="text-slate-400 hover:text-slate-200 transition-colors font-headline font-semibold tracking-tight">How it Works</a>
+      <a href="#" class="text-slate-400 hover:text-slate-200 transition-colors font-headline font-semibold tracking-tight">Platforms</a>
+      <a href="#" class="text-slate-400 hover:text-slate-200 transition-colors font-headline font-semibold tracking-tight">Pricing</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="dashboard.html" class="text-slate-400 hover:text-slate-200 transition-colors font-medium text-sm">Login</a>
+      <a href="dashboard.html" class="px-5 py-2 bg-primary text-on-primary rounded-lg font-headline font-bold text-sm transition-all active:scale-95">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="pt-32 pb-24" role="main">
+  <div class="max-w-7xl mx-auto px-6 text-center mb-32">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container ghost-border mb-8">
+      <span class="intelligence-pulse"></span>
+      <span class="text-xs text-on-surface-variant font-medium tracking-widest uppercase">AI-Driven Market Intelligence</span>
+    </div>
+    <h1 class="font-headline text-5xl md:text-7xl font-extrabold text-on-surface tracking-tighter mb-6 leading-tight">
+      Know when to buy.<br/><span class="text-primary">Let AI decide.</span>
+    </h1>
+    <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+      Paste any product URL. Our neural engine analyzes historical trends and market volatility to give you the perfect timing verdict.
+    </p>
+
+    <!-- Hero URL input -->
+    <div class="max-w-3xl mx-auto mb-6">
+      <form id="hero-form" class="flex flex-col md:flex-row p-2 rounded-xl bg-surface-container ghost-border shadow-2xl gap-2">
+        <div class="relative flex-1">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">link</span>
+          <input id="hero-url-input" type="url" placeholder="Paste product URL from Amazon, Flipkart..." autocomplete="off"
+            class="w-full bg-transparent border-none focus:ring-0 py-4 pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant/50 text-sm outline-none"/>
+        </div>
+        <button id="hero-track-btn" type="submit"
+          class="px-8 py-4 bg-primary text-on-primary font-headline font-bold rounded-lg text-sm transition-all active:scale-95 whitespace-nowrap">
+          Track product
+        </button>
+      </form>
+    </div>
+    <p class="text-xs text-on-surface-variant uppercase tracking-widest">Supported Platforms • Completely Free • No Signup Required</p>
+  </div>
+
+  <!-- Feature preview card -->
+  <div class="max-w-7xl mx-auto px-6 mb-40">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div class="lg:col-span-5">
+        <h2 class="font-headline text-4xl font-bold text-on-surface mb-6 leading-tight">Precision at a glance.</h2>
+        <p class="text-on-surface-variant leading-relaxed mb-8">Our interface strips away the noise, giving you a clear biological response: Buy now or Wait for a better opportunity.</p>
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low ghost-border">
+            <span class="material-symbols-outlined text-primary">analytics</span>
+            <div>
+              <h4 class="font-semibold text-on-surface">98.4% Confidence Score</h4>
+              <p class="text-xs text-on-surface-variant mt-1">Backed by price history and trend analysis.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lg:col-span-7">
+        <div class="relative p-8 rounded-2xl bg-surface-container ghost-border shadow-2xl overflow-hidden group">
+          <div class="absolute top-0 right-0 p-4">
+            <span class="px-3 py-1 bg-error-container text-on-error-container text-[10px] font-bold tracking-widest uppercase rounded-full">Live Tracking</span>
+          </div>
+          <div class="flex flex-col md:flex-row gap-8 items-start">
+            <div class="w-32 h-32 rounded-xl bg-surface-bright flex items-center justify-center">
+              <span class="material-symbols-outlined text-4xl text-outline">devices</span>
+            </div>
+            <div class="flex-grow">
+              <p class="text-on-surface-variant text-sm mb-2">Ultra-wide Gaming Monitor 34"</p>
+              <h3 class="text-3xl font-bold text-on-surface mb-4">₹74,999</h3>
+              <div class="inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-error/10 border border-error/20 mb-6">
+                <span class="text-3xl font-black text-error font-headline tracking-tighter italic">WAIT</span>
+                <div class="w-[1px] h-8 bg-error/20"></div>
+                <div class="text-sm text-error/90 leading-tight">Price expected to drop<br/>to <strong>₹68,999</strong> in 7 days.</div>
+              </div>
+              <div class="space-y-3">
+                <div class="flex justify-between text-xs font-label uppercase tracking-widest text-on-surface-variant">
+                  <span>AI Confidence</span><span class="text-primary">92%</span>
+                </div>
+                <div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+                  <div class="h-full bg-primary w-[92%]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features grid -->
+  <div class="bg-surface-container-low py-32 mb-40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div class="group">
+          <div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary">block</span>
+          </div>
+          <h3 class="font-headline text-xl font-bold text-on-surface mb-3">No more guessing</h3>
+          <p class="text-on-surface-variant text-sm leading-relaxed">Stop staring at charts. Our AI does the heavy lifting to find the floor price.</p>
+        </div>
+        <div class="group">
+          <div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary">psychology</span>
+          </div>
+          <h3 class="font-headline text-xl font-bold text-on-surface mb-3">AI Predictions</h3>
+          <p class="text-on-surface-variant text-sm leading-relaxed">Sophisticated neural networks predict future price movements with high accuracy.</p>
+        </div>
+        <div class="group">
+          <div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary">editor_choice</span>
+          </div>
+          <h3 class="font-headline text-xl font-bold text-on-surface mb-3">Simple Decision</h3>
+          <p class="text-on-surface-variant text-sm leading-relaxed">A binary verdict: Buy or Wait. Because your time is as valuable as your money.</p>
+        </div>
+        <div class="group">
+          <div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary">update</span>
+          </div>
+          <h3 class="font-headline text-xl font-bold text-on-surface mb-3">Auto Tracking</h3>
+          <p class="text-on-surface-variant text-sm leading-relaxed">We monitor the price every 8 hours in the background automatically.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="max-w-7xl mx-auto px-6 mb-40">
+    <h2 class="font-headline text-4xl font-bold text-center mb-20">Three steps to smarter savings.</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-16 relative">
+      <div class="hidden md:block absolute top-10 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-outline-variant/30 to-transparent -z-10"></div>
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-surface-container-high mx-auto mb-8 flex items-center justify-center text-2xl font-bold text-primary ghost-border">1</div>
+        <h4 class="font-headline text-xl font-bold mb-4">Paste link</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed">Copy any product URL from Amazon, Flipkart, Myntra, Croma and 4 more platforms.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-surface-container-high mx-auto mb-8 flex items-center justify-center text-2xl font-bold text-primary ghost-border">2</div>
+        <h4 class="font-headline text-xl font-bold mb-4">Automated tracking</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed">Our engine starts monitoring market conditions instantly, fetching prices every 8 hours.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-surface-container-high mx-auto mb-8 flex items-center justify-center text-2xl font-bold text-primary ghost-border">3</div>
+        <h4 class="font-headline text-xl font-bold mb-4">Buy/Wait decision</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed">Get a clear AI-powered notification when the price hits the predicted floor.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Platforms -->
+  <div class="max-w-7xl mx-auto px-6 text-center">
+    <p class="text-xs font-label uppercase tracking-widest text-outline mb-12">Integrated with Indian Retailers</p>
+    <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-40 hover:opacity-100 transition-all">
+      <span class="text-2xl font-bold tracking-tighter text-on-surface">AMAZON</span>
+      <span class="text-2xl font-bold tracking-tighter text-on-surface">FLIPKART</span>
+      <span class="text-2xl font-bold tracking-tighter text-on-surface">MYNTRA</span>
+      <span class="text-2xl font-bold tracking-tighter text-on-surface">CROMA</span>
+      <span class="text-2xl font-bold tracking-tighter text-on-surface">MEESHO</span>
+      <span class="text-2xl font-bold tracking-tighter text-on-surface">SNAPDEAL</span>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-background w-full py-10 mt-20 border-t border-outline-variant/5">
+  <div class="flex flex-col md:flex-row justify-between items-center px-10 gap-4 max-w-7xl mx-auto">
+    <span class="text-xl font-bold text-slate-200 font-headline">PriceSense</span>
+    <div class="flex flex-wrap justify-center gap-6">
+      <a href="#" class="text-slate-500 hover:text-slate-200 transition-colors text-sm">Privacy Policy</a>
+      <a href="#" class="text-slate-500 hover:text-slate-200 transition-colors text-sm">Terms of Service</a>
+      <a href="#" class="text-slate-500 hover:text-slate-200 transition-colors text-sm">Contact Support</a>
+    </div>
+    <span class="text-sm text-slate-500">© 2024 PriceSense Intelligence. All rights reserved.</span>
+  </div>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script>
+  document.getElementById("hero-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = document.getElementById("hero-url-input");
+    const btn   = document.getElementById("hero-track-btn");
+    const url   = input.value.trim();
+    if (!url || !url.startsWith("http")) { showToast("Please enter a valid product URL", "error"); return; }
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span> Fetching...`;
+    try {
+      const result = await trackProduct(url);
+      showToast(`Added: ${result.product.name}`, "success");
+      setTimeout(() => { window.location.href = `product.html?id=${result.product_id}`; }, 800);
+    } catch (err) {
+      showToast(err.message || "Could not add product", "error");
+      btn.disabled = false;
+      btn.innerHTML = "Track product";
+    }
+  });
+</script>
+</body></html>
