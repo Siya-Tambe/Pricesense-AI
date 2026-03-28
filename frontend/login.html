@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PriceSense — Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: { extend: {
+      colors: {
+        "primary": "#69daff", "outline-variant": "#46484a", "on-surface": "#eeeef0",
+        "surface-container": "#171a1c", "on-surface-variant": "#aaabad",
+        "background": "#0c0e10", "surface-container-high": "#1d2023",
+        "surface-container-low": "#111416", "surface-container-highest": "#232629",
+        "error": "#ff716c", "on-background": "#eeeef0", "primary-container": "#00cffc",
+        "on-primary": "#004a5d",
+      },
+      fontFamily: { "headline": ["Manrope"], "body": ["Inter"], "label": ["Inter"] },
+    }}
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+  .obsidian-glass { background: rgba(17,20,22,0.85); backdrop-filter: blur(20px); }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(105,218,255,0.2); border-top-color: #69daff; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: 28px; right: 28px; background: #1d2023; color: #eeeef0; padding: 13px 20px; border-radius: 8px; font-size: 14px; z-index: 999; opacity: 0; transform: translateY(12px); transition: opacity 0.3s, transform 0.3s; pointer-events: none; border: 1px solid rgba(70,72,74,0.3); max-width: 320px; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { border-left: 3px solid #ff716c; }
+  .toast.success { border-left: 3px solid #69daff; }
+  .glow-orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+  .input-field { width: 100%; background: #171a1c; border: 1px solid rgba(70,72,74,0.4); border-radius: 10px; color: #eeeef0; font-family: 'Inter', sans-serif; font-size: 14px; padding: 13px 16px 13px 44px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .input-field:focus { border-color: #69daff; box-shadow: 0 0 0 3px rgba(105,218,255,0.12); }
+  .input-field::placeholder { color: #aaabad; opacity: 0.6; }
+</style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex items-center justify-center relative overflow-hidden">
+
+<!-- Background orbs -->
+<div class="glow-orb" style="width:500px;height:500px;background:#69daff;top:-200px;right:-150px;opacity:0.07;"></div>
+<div class="glow-orb" style="width:400px;height:400px;background:#22d3a0;bottom:-150px;left:-100px;opacity:0.05;"></div>
+
+<!-- Card -->
+<div class="relative z-10 w-full max-w-md px-6">
+
+  <!-- Logo -->
+  <div class="text-center mb-8">
+    <a href="index.html" class="text-3xl font-headline font-extrabold tracking-tighter text-on-surface">
+      Price<span class="text-primary">Sense</span>
+    </a>
+    <p class="text-on-surface-variant text-sm mt-2">Sign in to your account</p>
+  </div>
+
+  <!-- Form card -->
+  <div class="obsidian-glass rounded-2xl border border-outline-variant/20 p-8">
+
+    <form id="login-form" class="space-y-5">
+
+      <!-- Email -->
+      <div>
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Email</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">mail</span>
+          <input id="email" type="email" placeholder="you@example.com" autocomplete="email" class="input-field" required/>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Password</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">lock</span>
+          <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" class="input-field" required/>
+          <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
+            <span id="eye-icon" class="material-symbols-outlined text-lg">visibility</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error message -->
+      <div id="error-msg" class="hidden text-error text-sm flex items-center gap-2 bg-error/10 border border-error/20 rounded-lg px-4 py-3">
+        <span class="material-symbols-outlined text-sm">error</span>
+        <span id="error-text"></span>
+      </div>
+
+      <!-- Submit -->
+      <button id="login-btn" type="submit"
+        class="w-full py-3.5 bg-primary text-on-primary font-headline font-bold rounded-xl transition-all hover:opacity-90 active:scale-97 mt-2">
+        Sign in
+      </button>
+
+    </form>
+
+    <!-- Divider -->
+    <div class="flex items-center gap-3 my-6">
+      <div class="flex-1 h-px bg-outline-variant/20"></div>
+      <span class="text-xs text-on-surface-variant">or</span>
+      <div class="flex-1 h-px bg-outline-variant/20"></div>
+    </div>
+
+    <!-- Demo login -->
+    <button onclick="loginAsDemo()"
+      class="w-full py-3 border border-outline-variant/30 rounded-xl text-sm text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all font-medium flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined text-sm">science</span>
+      Try demo — no account needed
+    </button>
+
+  </div>
+
+  <!-- Sign up link -->
+  <p class="text-center text-sm text-on-surface-variant mt-6">
+    Don't have an account?
+    <a href="signup.html" class="text-primary hover:underline font-medium ml-1">Create one →</a>
+  </p>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Redirect if already logged in
+  redirectIfLoggedIn();
+
+  // Toggle password visibility
+  function togglePassword() {
+    const input   = document.getElementById("password");
+    const icon    = document.getElementById("eye-icon");
+    const isHidden = input.type === "password";
+    input.type    = isHidden ? "text" : "password";
+    icon.textContent = isHidden ? "visibility_off" : "visibility";
+  }
+
+  // Show inline error
+  function showError(msg) {
+    const box  = document.getElementById("error-msg");
+    const text = document.getElementById("error-text");
+    text.textContent = msg;
+    box.classList.remove("hidden");
+  }
+
+  function hideError() {
+    document.getElementById("error-msg").classList.add("hidden");
+  }
+
+  // Login form submit
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideError();
+
+    const email    = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const btn      = document.getElementById("login-btn");
+
+    btn.disabled    = true;
+    btn.innerHTML   = `<span class="spinner mr-2"></span> Signing in...`;
+
+    try {
+      const result = await apiLogin(email, password);
+      showToast(`Welcome back, ${result.user.name}! 👋`, "success");
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 800);
+    } catch (err) {
+      showError(err.message || "Incorrect email or password.");
+      btn.disabled  = false;
+      btn.innerHTML = "Sign in";
+    }
+  });
+
+  // Demo login — go straight to dashboard as guest
+  function loginAsDemo() {
+    window.location.href = "dashboard.html?demo=true";
+  }
+</script>
+</body>
+</html>
